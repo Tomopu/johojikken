@@ -84,8 +84,7 @@ void read_data(char *fname, int *a, int n){
 
 // インサートソート
 double insert(int *a, int n){
-   int i, j, temp, k;
-   int flag = 0;
+   int i, j, temp;
    long start_time, end_time;
 
    start_time = clock();
