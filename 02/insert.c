@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <time.h>
 
-void init(char *, int *, int *, int *);      // 要素数, 最小値, 最大値の取得
-void read_data(char *, int *, int);          // データの読み込み
-double bucket(int *, int *, int, int, int);  // バケットソート
+void init(char *, int *);              // 要素数, 最小値, 最大値の取得
+void read_data(char *, int *, int);    // データの読み込み
+double insert(int *, int);             // インサートソート
 
 int main(int argc, char *argv[]){
-   int i, n, min, max;
-   int *a, *bkt;
+   int i, n;
+   int *a;
    double time;
 
    // 引数は２つあるか
@@ -17,20 +17,17 @@ int main(int argc, char *argv[]){
       return 0;
    }
 
-   init(argv[1], &n, &min, &max);
+   init(argv[1], &n);
 
    // 動的にメモリを確保
    a = (int *)malloc(sizeof(int)*n);
    if(a == NULL) return 1;
 
-   bkt = (int *)malloc(sizeof(int)*((max-min)+1));
-   if(bkt == NULL) return 1;
-
    // ファイルを開ける
    read_data(argv[1], a, n);
 
    // バケットソート
-   time = bucket(a, bkt, n, min, max);
+   time = insert(a, n);
 
    // 結果を表示
    for(i=0; i<n; i++){
@@ -41,13 +38,12 @@ int main(int argc, char *argv[]){
 
    // メモリの解放
    free(a);
-   free(bkt);
 
    return 0;
 }
 
 // 要素数, 最小値, 最大値の取得
-void init(char *fname, int *n, int *min, int *max){
+void init(char *fname, int *n){
    FILE *fp;
    int data;
 
@@ -60,13 +56,6 @@ void init(char *fname, int *n, int *min, int *max){
 
    // 要素数, 最小値, 最大値の取得
    while(fscanf(fp, "%d", &data) != EOF){
-      if(*n == 0){
-         *min = *max = data;
-      }
-
-      if(data < *min) *min = data;
-      if(data > *max) *max = data;
-
       (*n)++;
    }
 
@@ -93,22 +82,23 @@ void read_data(char *fname, int *a, int n){
    return;
 }
 
-// バケットソート
-double bucket(int *a, int *bkt, int n, int min, int max){
-   int i, j, k;
+// インサートソート
+double insert(int *a, int n){
+   int i, j, temp, k;
+   int flag = 0;
    long start_time, end_time;
 
    start_time = clock();
 
    for(i=0; i<n; i++){
-      bkt[a[i]-min]++;
-   }
-
-   k = 0;
-   for(i=0; i<(max-min)+1; i++){
-      for(j=0; j<bkt[i]; j++){
-         a[k] = i + min;
-         k++;
+      for(j=i; j>0; j--){
+         if(a[j-1] > a[j]){
+            temp = a[j];
+            a[j] = a[j-1];
+            a[j-1] = temp;
+         }else{
+            break;
+         }
       }
    }
 
