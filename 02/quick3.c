@@ -2,14 +2,19 @@
 #include <stdlib.h>
 #include <time.h>
 
-void init(char *, int *);              // 要素数, 最小値, 最大値の取得
-void read_data(char *, int *, int, int, int);    // データの読み込み
-double shacker(int *, int);             // シェイカーソート
+void init(char *, int *);                       // 要素数, 最小値, 最大値の取得
+void read_data(char *, int *, int, int, int);   // データの読み込み
+void swap(int *, int, int);                     // 要素の交換
+void quick(int *, int, int);                    // クイックソート
 
 int main(int argc, char *argv[]){
    int i, n, upper, lower;
    int *a;
    double time;
+   long start_time, end_time;
+
+   // 乱数の設定
+   // srand((unsigned int)time(NULL));
 
    // 引数は２つあるか
    if(argc < 2){
@@ -53,20 +58,21 @@ int main(int argc, char *argv[]){
    // ファイルを開ける
    read_data(argv[1], a, n, lower, upper);
 
-   printf("");
+   start_time = clock();
+   // クイックソート
+   quick(a, 0, (upper-lower));
+   end_time = clock();
 
-   // バケットソート
-   time = shacker(a, (upper-lower)+1);
+   time = (double)(end_time-start_time)/CLOCKS_PER_SEC;
 
    // 結果を表示
-   for(i=0; i<n; i++){
-      printf("%d ", *(a+i));
-   }
-   printf("\n");
-   printf("実行時間: %.10lf(s)\n", time);
+   // for(i=0; i<(upper-lower)+1; i++){
+   //    printf("%d ", *(a+i));
+   // }
+   // printf("\n");
+   // printf("実行時間: %.10lf(s)\n", time);
 
-   // printf("%.10lf\n", time);
-
+   printf("%.10lf\n", time);
 
    // メモリの解放
    free(a);
@@ -120,42 +126,36 @@ void read_data(char *fname, int *a, int n, int lower, int upper){
    return;
 }
 
-// シェイカーソート
-double shacker(int *a, int n){
-   int i, left, right, temp, change;
-   long start_time, end_time;
+// 要素の入れ替え
+void swap(int *a, int i, int j) {
+   int tmp;
+   tmp = a[i];
+   a[i] = a[j];
+   a[j] = tmp;
+}
 
-   start_time = clock();
+// クイックソート
+void quick(int a[], int left, int right){
+   int i, last;
 
-   // 変数の初期化
-   left = 0;
-   right = n-1;
+   // 終了条件
+   if (left >= right) return;
 
-   while (1){
-      for(i=left; i<right; i++){
-         if(a[i] > a[i+1]){
-            temp = a[i];
-            a[i] = a[i+1];
-            a[i+1] = temp;
-            change = i;
-         }
+   last = left;
+   for (i=left+1; i <= right; i++){
+      if (a[i] < a[left] ){
+         last++;
+         swap(a, i, last);        
       }
-      right = change;
-      if(left == right) break;
-
-      for(i=right; i>left; i--){
-         if(a[i-1] > a[i]){
-            temp = a[i];
-            a[i] = a[i-1];
-            a[i-1] = temp;
-            change = i;
-         }
-      }
-      left = change;
-      if(left == right) break;
    }
-   
-   end_time = clock();
 
-   return (double)(end_time-start_time)/CLOCKS_PER_SEC;
+   swap(a, left, last);
+
+   // pivotよりも小さい値のソート
+   quick(a, left, last-1);
+
+   // 大きい数字を集めた範囲に対してソート */
+   quick(a, last+1, right);
+
+   return;
 }

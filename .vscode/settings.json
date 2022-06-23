@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "__locale": "c",
+        "cstdlib": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
+}

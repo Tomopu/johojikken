@@ -2,12 +2,14 @@
 #include <stdlib.h>
 #include <time.h>
 
-void init(char *, int *);              // 要素数, 最小値, 最大値の取得
-void read_data(char *, int *, int, int, int);    // データの読み込み
-double shacker(int *, int);             // シェイカーソート
+void init(char *, int *);
+void read_data(char *, int *, int, int, int);   // データの読み込み
+void swap(int *, int, int);
+void quick(int *, int, int);
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]) {
    int i, n, upper, lower;
+   long start_time, end_time;
    int *a;
    double time;
 
@@ -17,6 +19,7 @@ int main(int argc, char *argv[]){
       return 0;
    }
 
+   // データの要素数を取得
    init(argv[1], &n);
 
    // 上限と下限の初期化
@@ -30,6 +33,11 @@ int main(int argc, char *argv[]){
          printf("error: The index of the lower limit for splitting data is out of range \n");
          printf("Change the lower limit to %d\n", n-1);
          lower = n-1;
+      }
+      else if(lower < 0){
+         printf("error: The index of the lower limit for splitting data is out of range \n");
+         printf("Change the lower limit to 0\n");
+         lower = 0;
       }
    }
 
@@ -46,31 +54,36 @@ int main(int argc, char *argv[]){
       }
    }
 
+   printf("lower: %d, upper: %d, n: %d\n", lower, upper, n);
+
    // 動的にメモリを確保
-   a = (int *)malloc(sizeof(int)*(upper-lower)+1);
+   a = (int *)malloc(sizeof(int)*((upper-lower)+1));
    if(a == NULL) return 1;
+
+   printf("a");
 
    // ファイルを開ける
    read_data(argv[1], a, n, lower, upper);
 
-   printf("");
+   printf("b");
 
-   // バケットソート
-   time = shacker(a, (upper-lower)+1);
+   start_time = clock();   
+   // クイックソート
+   quick(a, 0, (upper-lower));
+   end_time = clock();
+
+   time = (double)(end_time-start_time)/CLOCKS_PER_SEC;
 
    // 結果を表示
-   for(i=0; i<n; i++){
+   printf("\n");
+   for(i=0; i<(upper-lower)+1; i++){
       printf("%d ", *(a+i));
    }
    printf("\n");
    printf("実行時間: %.10lf(s)\n", time);
 
-   // printf("%.10lf\n", time);
-
-
    // メモリの解放
    free(a);
-
    return 0;
 }
 
@@ -120,42 +133,42 @@ void read_data(char *fname, int *a, int n, int lower, int upper){
    return;
 }
 
-// シェイカーソート
-double shacker(int *a, int n){
-   int i, left, right, temp, change;
-   long start_time, end_time;
+void swap(int *a, int i, int j) {
+   int tmp;
+   tmp = a[i];
+   a[i] = a[j];
+   a[j] = tmp;
+}
 
-   start_time = clock();
+/* クイックソートを行う関数 */
+void quick(int a[], int left, int right) {
+   // static int count = 0;
+   int i = left;
+   int j = right;
+   int pivot = a[left];
+   int k;
 
-   // 変数の初期化
-   left = 0;
-   right = n-1;
+   // count++;
+   // printf("[%d]", count);
 
-   while (1){
-      for(i=left; i<right; i++){
-         if(a[i] > a[i+1]){
-            temp = a[i];
-            a[i] = a[i+1];
-            a[i+1] = temp;
-            change = i;
-         }
-      }
-      right = change;
-      if(left == right) break;
+   // 終了条件
+   if(left >= right) return;
 
-      for(i=right; i>left; i--){
-         if(a[i-1] > a[i]){
-            temp = a[i];
-            a[i] = a[i-1];
-            a[i-1] = temp;
-            change = i;
-         }
-      }
-      left = change;
-      if(left == right) break;
+   while(1) {
+      // 並び順がおかしいところまで検索
+      while ((a[i] < pivot) && (i < j)) i++;
+      while ((a[j] > pivot) && (i < j)) j--;
+
+      // 終了条件
+      if (i >= j) break;
+      
+      // 入れ替え
+      swap(a, i, j);
    }
-   
-   end_time = clock();
 
-   return (double)(end_time-start_time)/CLOCKS_PER_SEC;
+   // pivotよりも小さい値のソート
+   quick(a, left, i-1);
+   
+   // 大きい数字を集めた範囲に対してソート */
+   quick(a, j+1, right);
 }

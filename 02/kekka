@@ -1,0 +1,38 @@
+bubble.c:
+    data1.dat:
+        26.7642320000(s)
+    data2.dat:
+        26.9756800000(s)
+    data3.dat:
+        26.9977480000(s)
+    data4.dat:
+        10.2630300000(s)
+    data5.dat:
+        18.7503660000(s)
+    data6.dat:
+        14.4655630000(s)
+    data7.dat:
+        23.6341870000(s)
+
+// 改良版
+bubble2.c:
+    data1.dat:
+        27.4316990000(s)
+    data2.dat:
+        26.9146820000(s)
+    data3.dat:
+        26.7879070000(s)
+    data4.dat:
+        6.9776280000(s)
+    data5.dat:
+        18.3941030000(s)
+    data6.dat:
+        14.5073710000(s)
+    data7.dat:
+        24.0301860000(s)
+
+
+
+./bubble3 data1.dat && ./bubble3 data2.dat && ./bubble3 data3.dat && ./bubble3 data4.dat && ./bubble3 data5.dat && ./bubble3 data6.dat && ./bubble3 data7.dat
+
+./bubble3c data1.dat && ./bubble3c data2.dat && ./bubble3c data3.dat && ./bubble3c data4.dat && ./bubble3c data5.dat && ./bubble3c data6.dat && ./bubble3c data7.dat
